@@ -32,9 +32,9 @@ cat "${OCTODNS_KEY_FILE}" >> "${NAMED_CONF_FILE}"
 # ---
 
 NS_DOMAIN="${NS_DOMAIN:-nameserver.local}"
-NS_ROLE=${NS_ROLE:-master} # role: master or slave
+NS_ROLE=${NS_ROLE:-primary} # role: primary or secondary
 NS_DATABASE="/var/lib/bind/db.${NS_DOMAIN}"
-NS_ADDR_COUNT=${NS_ADDR_COUNT:-0}
+NS_ADDR_COUNT=${NS_ADDR_COUNT:-1}
 
 # NS1_ADDR=192.168.0.151
 # NS2_ADDR=192.168.0.152
@@ -121,15 +121,46 @@ EOF
         echo "============================================================="
     fi
 
+# Add zone to NAMED_CONF_FILE as primary
+# Setup allow-transfer for OCTODNS_KEY_NAME and NS${i}_ADDR
+if [[ "${NS_ROLE}" == "primary" ]]; then
 cat <<EOF >> "${NAMED_CONF_FILE}"
 // ${zone}
 zone "${zone}." {
   type ${NS_ROLE};
   file "${ZONE_DATABASE}";
   notify explicit;
+  // IP addresses of secondary servers allowed to
+  // transfer the zone
+  allow-transfer {
+    key "${OCTODNS_KEY_NAME}";
+EOF
+for((i=2;i<="${NS_ADDR_COUNT}";i++)); do
+    record="NS${i}_ADDR"
+    record="${!record}"
+    echo "    ${record};" >> "${NAMED_CONF_FILE}"
+done
+cat <<EOF >> "${NAMED_CONF_FILE}"
+  };
 };
 
 EOF
+# Add zone to NAMED_CONF_FILE as secondary
+# Setup masters to NS1_ADDR
+elif [[ "${NS_ROLE}" == "secondary" ]]; then
+cat <<EOF >> "${NAMED_CONF_FILE}"
+// ${zone}
+zone "${zone}." {
+  type ${NS_ROLE};
+  file "${ZONE_DATABASE}";
+  notify explicit;
+  // IP address of eng.example.com primary server
+  masters { ${NS1_ADDR}; };
+};
+
+EOF
+fi
+
 
 done # for zone in "${_AVAILABLE_ZONES[@]}"
 
