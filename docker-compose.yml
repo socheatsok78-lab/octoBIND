@@ -1,0 +1,9 @@
+services:
+  bind9:
+    image: localhost/bind9:latest
+    environment:
+      NS_ADDR_COUNT: 3
+      NS1_ADDR: 192.168.0.151
+      NS2_ADDR: 192.168.0.152
+      NS3_ADDR: 192.168.0.153
+      AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
