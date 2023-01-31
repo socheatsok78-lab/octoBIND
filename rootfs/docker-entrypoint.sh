@@ -59,7 +59,7 @@ EOF
 for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
     record="NS_${i}_SERVER"
     record="${!record}"
-    echo "${NS_DOMAIN}. 1800 IN NS ns1.${NS_DOMAIN}."
+    echo "${NS_DOMAIN}. 1800 IN NS ns${i}.${NS_DOMAIN}." >> "${NS_DATABASE}"
     echo "ns${i}     1800    IN  A   ${record}" >> "${NS_DATABASE}"
 done
 
@@ -107,9 +107,7 @@ for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
     "
 done
 
-AVAILABLE_ZONES="${AVAILABLE_ZONES}"
-IFS=', ' read -r -a _AVAILABLE_ZONES <<< "${AVAILABLE_ZONES}"
-
+# Prepare NAMED_CONF_FILE
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
 //
@@ -117,6 +115,9 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 //
 
 EOF
+
+AVAILABLE_ZONES="${AVAILABLE_ZONES}"
+IFS=', ' read -r -a _AVAILABLE_ZONES <<< "${AVAILABLE_ZONES}"
 
 # Loop over AVAILABLE_ZONES list
 # Generate stub zone file for each domain
