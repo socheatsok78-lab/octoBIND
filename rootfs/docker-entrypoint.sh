@@ -101,6 +101,12 @@ zone "${NS_DOMAIN}." {
   type ${NS_ROLE};
   file "${NS_DATABASE}";
   notify yes;
+  allow-transfer {
+    key "${OCTODNS_KEY_NAME}"; # AXFR
+  };
+  allow-update {
+    key "${OCTODNS_KEY_NAME}"; # RFC 2136
+  };
   also-notify { ${NOTIFY_SERVER_IPS}
   };
 };
