@@ -181,7 +181,6 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 zone "${zone}." {
   type ${NS_ROLE};
   file "${ZONE_DATABASE}";
-  notify yes;
   primaries { ${NS_1_SERVER}; };
 };
 
