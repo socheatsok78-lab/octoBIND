@@ -81,7 +81,7 @@ done
 if [[ "${NS_ROLE}" == "primary" ]]; then
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
-// Default name server zone ${NS_DOMAIN}
+// Default ${NS_ROLE} name server zone ${NS_DOMAIN}
 zone "${NS_DOMAIN}." {
   type ${NS_ROLE};
   file "${NS_DATABASE}";
@@ -91,11 +91,10 @@ EOF
 else
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
-// Default name server zone ${NS_DOMAIN}
+// Default ${NS_ROLE} name server zone ${NS_DOMAIN}
 zone "${NS_DOMAIN}." {
   type ${NS_ROLE};
   file "${NS_DATABASE}";
-  notify yes;
   primaries { ${NS_1_SERVER}; };
 };
 EOF
