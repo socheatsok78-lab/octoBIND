@@ -14,7 +14,10 @@ services:
       AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
     secrets:
       - octodns.key
+      - rndc.key
 
 secrets:
   octodns.key:
     file: octodns.key
+  rndc.key:
+    file: rndc.key
