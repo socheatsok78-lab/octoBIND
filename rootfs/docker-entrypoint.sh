@@ -31,14 +31,6 @@ echo "// OctoDNS Key" >> "${NAMED_CONF_FILE}"
 cat "${OCTODNS_KEY_FILE}" >> "${NAMED_CONF_FILE}"
 chown "${BIND_USER}:${BIND_USER}" "${NAMED_CONF_FILE}"
 
-
-# Experimenting with rndc.key
-if [  ! -f "/etc/bind/rndc.key.origin" ]; then
-    mv /etc/bind/rndc.key /etc/bind/rndc.key.origin
-    cp "${OCTODNS_KEY_FILE}" /etc/bind/rndc.key
-fi
-
-
 # ---
 
 NS_DOMAIN="${NS_DOMAIN:-nameserver.local}"
