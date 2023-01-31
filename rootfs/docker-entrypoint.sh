@@ -108,7 +108,9 @@ SECONDARY_SERVER_IPS=""
 for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
     record="NS_${i}_SERVER"
     record="${!record}"
-    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}\n    ${record};"
+    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
+    ${record};
+    "
 done
 
 # Loop over AVAILABLE_ZONES list
