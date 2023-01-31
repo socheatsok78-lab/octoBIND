@@ -172,9 +172,11 @@ zone "${zone}." {
   notify yes;
   allow-transfer {
     key "${OCTODNS_KEY_NAME}"; # AXFR
+    ${SECONDARY_SERVER_IPS}
   };
   allow-update {
     key "${OCTODNS_KEY_NAME}"; # RFC 2136
+    ${SECONDARY_SERVER_IPS}
   };
 };
 
