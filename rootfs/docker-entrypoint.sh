@@ -73,7 +73,7 @@ zone "${NS_DOMAIN}." {
   notify yes;
 };
 EOF
-elif [[ "${NS_ROLE}" == "secondary" ]]; then
+else
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
 // Default name server zone ${NS_DOMAIN}
@@ -126,7 +126,7 @@ do
 
 if [[ "${NS_ROLE}" == "primary" ]]; then
     ZONE_DATABASE="/var/lib/bind/db.${zone}"
-elif [[ "${NS_ROLE}" == "secondary" ]]; then
+else
     ZONE_DATABASE="/var/lib/bind/${zone}.saved"
 fi
 
@@ -180,7 +180,7 @@ zone "${zone}." {
 EOF
 # Add zone to NAMED_CONF_FILE as secondary
 # Setup masters to NS_1_SERVER
-elif [[ "${NS_ROLE}" == "secondary" ]]; then
+else
 cat <<EOF >> "${NAMED_CONF_FILE}"
 // ${zone}
 zone "${zone}." {
