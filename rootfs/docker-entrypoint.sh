@@ -44,13 +44,30 @@ chown "${BIND_USER}:${BIND_USER}" "${NAMED_CONF_FILE}"
 
 NS_DOMAIN="${NS_DOMAIN:-nameserver.local}"
 NS_ROLE=${NS_ROLE:-primary} # role: primary or secondary
-NS_DATABASE="/var/lib/bind/db.${NS_DOMAIN}"
+
+if [[ "${NS_ROLE}" == "primary" ]]; then
+    NS_DATABASE="/var/lib/bind/db.${NS_DOMAIN}"
+else
+    NS_DATABASE="/var/lib/bind/${NS_DOMAIN}.saved"
+fi
 
 NS_SERVER_COUNT=${NS_SERVER_COUNT:-1}
 # c=192.168.0.151
 # c=192.168.0.152
 # c=192.168.0.153
 
+# Notify Name Server IP Addresses
+NOTIFY_SERVER_IPS=""
+for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
+    record="NS_${i}_SERVER"
+    record="${!record}"
+
+    NOTIFY_SERVER_IPS="${NOTIFY_SERVER_IPS}
+    ${record} key \"${OCTODNS_KEY_NAME}\";
+    "
+done
+
+if [[ "${NS_ROLE}" == "primary" ]]; then
 # Generate NS_DOMAIN zone
 cat <<EOF > "${NS_DATABASE}"
 \$ORIGIN ${NS_DOMAIN}.
@@ -78,7 +95,6 @@ for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
     echo "ns${i}     1800    IN  A   ${record}" >> "${NS_DATABASE}"
 done
 
-if [[ "${NS_ROLE}" == "primary" ]]; then
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
 // Default ${NS_ROLE} name server zone ${NS_DOMAIN}
@@ -86,6 +102,9 @@ zone "${NS_DOMAIN}." {
   type ${NS_ROLE};
   file "${NS_DATABASE}";
   notify yes;
+  also-notify {
+    ${NOTIFY_SERVER_IPS}
+  };
 };
 EOF
 else
@@ -95,10 +114,10 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 zone "${NS_DOMAIN}." {
   type ${NS_ROLE};
   file "${NS_DATABASE}";
-  primaries { ${NS_1_SERVER}; };
+  primaries { ${NS_1_SERVER} key "${OCTODNS_KEY_NAME}"; };
 };
 EOF
-fi
+fi # if [[ "${NS_ROLE}" == "primary" ]]; then
 
 # Debug print
 if [[ -z "${DEBUG}" ]]; then
@@ -110,22 +129,6 @@ if [[ -z "${DEBUG}" ]]; then
 fi
 
 # ---
-
-# Secondary Name Server IP Addresses
-NOTIFY_SERVER_IPS=""
-SECONDARY_SERVER_IPS=""
-for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
-    record="NS_${i}_SERVER"
-    record="${!record}"
-
-    NOTIFY_SERVER_IPS="${NOTIFY_SERVER_IPS}
-    ${record} key \"${OCTODNS_KEY_NAME}\";
-    "
-
-    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
-    ${record};
-    "
-done
 
 # Prepare NAMED_CONF_FILE
 cat <<EOF >> "${NAMED_CONF_FILE}"
