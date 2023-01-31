@@ -8,8 +8,9 @@ services:
     environment:
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
       NS_SERVER_ROLE: primary
-      NS_SERVER_COUNT: 1
-      NS_SERVER_1_ADDR: 192.168.131.151
+      NS_SERVER_COUNT: 2
+      NS_SERVER_1_ADDR: 192.168.131.150
+      NS_SERVER_2_ADDR: 192.168.131.151
       AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
     volumes:
       - config:/etc/bind
