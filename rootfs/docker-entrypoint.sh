@@ -60,6 +60,12 @@ for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
     record="NS_${i}_SERVER"
     record="${!record}"
     echo "${NS_DOMAIN}. 1800 IN NS ns${i}.${NS_DOMAIN}." >> "${NS_DATABASE}"
+done
+
+# Add A record for NS to NS_DOMAIN zone
+for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
+    record="NS_${i}_SERVER"
+    record="${!record}"
     echo "ns${i}     1800    IN  A   ${record}" >> "${NS_DATABASE}"
 done
 
