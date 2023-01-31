@@ -117,7 +117,7 @@ for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
     record="NS_${i}_SERVER"
     record="${!record}"
     SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
-    ${record};
+    ${record} key \"${OCTODNS_KEY_NAME}\";
     "
 done
 
