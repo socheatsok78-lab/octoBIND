@@ -63,8 +63,7 @@ for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
     record="${!record}"
 
     NOTIFY_SERVER_IPS="${NOTIFY_SERVER_IPS}
-    ${record} key \"${OCTODNS_KEY_NAME}\";
-    "
+    ${record} key \"${OCTODNS_KEY_NAME}\";"
 done
 
 if [[ "${NS_ROLE}" == "primary" ]]; then
@@ -102,8 +101,7 @@ zone "${NS_DOMAIN}." {
   type ${NS_ROLE};
   file "${NS_DATABASE}";
   notify yes;
-  also-notify {
-    ${NOTIFY_SERVER_IPS}
+  also-notify { ${NOTIFY_SERVER_IPS}
   };
 };
 EOF
@@ -201,8 +199,7 @@ zone "${zone}." {
   allow-update {
     key "${OCTODNS_KEY_NAME}"; # RFC 2136
   };
-  also-notify {
-    ${NOTIFY_SERVER_IPS}
+  also-notify { ${NOTIFY_SERVER_IPS}
   };
 };
 
