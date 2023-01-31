@@ -53,14 +53,13 @@ ${NS_DOMAIN}. IN SOA ns1.${NS_DOMAIN}. hostmaster.${NS_DOMAIN}. (
                 1w      ; expire (1 week)
                 30m     ; minimum (30 minutes)
                 )
-${NS_DOMAIN}. 1800 IN NS ns1.${NS_DOMAIN}.
 EOF
-chown "${BIND_USER}:${BIND_USER}" "${NS_DATABASE}"
 
 # Add NS record to NS_DOMAIN zone
 for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
     record="NS_${i}_SERVER"
     record="${!record}"
+    echo "${NS_DOMAIN}. 1800 IN NS ns1.${NS_DOMAIN}."
     echo "ns${i}     1800    IN  A   ${record}" >> "${NS_DATABASE}"
 done
 
@@ -125,7 +124,7 @@ EOF
 for zone in "${_AVAILABLE_ZONES[@]}"
 do
 
-    ZONE_DATABASE="/var/lib/bind/db.${zone}"
+ZONE_DATABASE="/var/lib/bind/db.${zone}"
 
 # cat <<EOF > "${ZONE_DATABASE}"
 cat <<EOF > "${ZONE_DATABASE}"
@@ -140,7 +139,6 @@ ${zone}	IN SOA	ns1.${NS_DOMAIN}. hostmaster.${zone}. (
 				)
 EOF
 # cat <<EOF > "${ZONE_DATABASE}"
-chown "${BIND_USER}:${BIND_USER}" "${ZONE_DATABASE}"
 
     # Add NS record to zone
     for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
@@ -154,6 +152,9 @@ chown "${BIND_USER}:${BIND_USER}" "${ZONE_DATABASE}"
         cat "${ZONE_DATABASE}"
         echo "============================================================="
     fi
+
+# Change ZONE_DATABASE ownerships
+chown "${BIND_USER}:${BIND_USER}" "${ZONE_DATABASE}"
 
 # Add zone to NAMED_CONF_FILE as primary
 # Setup allow-transfer for OCTODNS_KEY_NAME and NS${i}_ADDR
@@ -187,8 +188,10 @@ zone "${zone}." {
 EOF
 fi
 
-
 done # for zone in "${_AVAILABLE_ZONES[@]}"
+
+# Change NS_DATABASE ownerships
+chown "${BIND_USER}:${BIND_USER}" "${NS_DATABASE}"
 
 # ---
 
