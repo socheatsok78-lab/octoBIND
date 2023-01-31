@@ -1,5 +1,5 @@
 services:
-  primary:
+  bind:
     image: localhost/bind9:latest
     ports:
       - 53:53/udp
@@ -8,36 +8,9 @@ services:
     environment:
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
       NS_ROLE: primary
-      NS_SERVER_COUNT: 1
+      NS_SERVER_COUNT: 2
       NS_1_SERVER: 192.168.131.150
-      NS_2_SERVER: 192.168.0.152
-      NS_3_SERVER: 192.168.0.153
-      AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
-    secrets:
-      - octodns.key
-
-  secondary-1:
-    image: localhost/bind9:latest
-    environment:
-      OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
-      NS_ROLE: secondary
-      NS_SERVER_COUNT: 1
-      NS_1_SERVER: 192.168.131.150
-      NS_2_SERVER: 192.168.0.152
-      NS_3_SERVER: 192.168.0.153
-      AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
-    secrets:
-      - octodns.key
-
-  secondary-2:
-    image: localhost/bind9:latest
-    environment:
-      OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
-      NS_ROLE: secondary
-      NS_SERVER_COUNT: 1
-      NS_1_SERVER: 192.168.131.150
-      NS_2_SERVER: 192.168.0.152
-      NS_3_SERVER: 192.168.0.153
+      NS_2_SERVER: 192.168.131.151
       AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
     secrets:
       - octodns.key
