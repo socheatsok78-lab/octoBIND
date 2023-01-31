@@ -46,7 +46,13 @@ NS_SERVER_COUNT=${NS_SERVER_COUNT:-1}
 cat <<EOF > "${NS_DATABASE}"
 \$ORIGIN ${NS_DOMAIN}.
 \$TTL 1800
-${NS_DOMAIN}. IN SOA ns1.${NS_DOMAIN}. hostmaster.${NS_DOMAIN}. 1674985166 10800 3600 604800 1800
+${NS_DOMAIN}. IN SOA ns1.${NS_DOMAIN}. hostmaster.${NS_DOMAIN}. (
+                1       ; serial
+                3h      ; refresh (3 hours)
+                1h      ; retry (1 hour)
+                1w      ; expire (1 week)
+                30m     ; minimum (30 minutes)
+                )
 ${NS_DOMAIN}. 1800 IN NS ns1.${NS_DOMAIN}.
 EOF
 chown "${BIND_USER}:${BIND_USER}" "${NS_DATABASE}"
@@ -92,6 +98,16 @@ fi
 
 # ---
 
+# Secondary Name Server IP Addresses
+SECONDARY_SERVER_IPS=""
+for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
+    record="NS_${i}_SERVER"
+    record="${!record}"
+    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
+    ${record};
+    "
+done
+
 AVAILABLE_ZONES="${AVAILABLE_ZONES}"
 IFS=', ' read -r -a _AVAILABLE_ZONES <<< "${AVAILABLE_ZONES}"
 
@@ -102,16 +118,6 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 //
 
 EOF
-
-#
-SECONDARY_SERVER_IPS=""
-for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
-    record="NS_${i}_SERVER"
-    record="${!record}"
-    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
-    ${record};
-    "
-done
 
 # Loop over AVAILABLE_ZONES list
 # Generate stub zone file for each domain
@@ -126,11 +132,11 @@ cat <<EOF > "${ZONE_DATABASE}"
 \$ORIGIN .
 \$TTL 1800	; 30 minutes
 ${zone}	IN SOA	ns1.${NS_DOMAIN}. hostmaster.${zone}. (
-				1674985167 ; serial
-				10800      ; refresh (3 hours)
-				3600       ; retry (1 hour)
-				604800     ; expire (1 week)
-				1800       ; minimum (30 minutes)
+				1       ; serial
+				3h      ; refresh (3 hours)
+				1h      ; retry (1 hour)
+				1w      ; expire (1 week)
+				30m     ; minimum (30 minutes)
 				)
 EOF
 # cat <<EOF > "${ZONE_DATABASE}"
