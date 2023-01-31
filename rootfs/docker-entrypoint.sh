@@ -42,13 +42,13 @@ chown "${BIND_USER}:${BIND_USER}" "${NAMED_CONF_FILE}"
 
 # ---
 
-NS_DOMAIN="${NS_DOMAIN:-nameserver.local}"
-NS_ROLE=${NS_ROLE:-primary} # role: primary or secondary
+NS_SERVER_DOMAIN="${NS_SERVER_DOMAIN:-nameserver.local}"
+NS_SERVER_ROLE=${NS_SERVER_ROLE:-primary} # role: primary or secondary
 
-if [[ "${NS_ROLE}" == "primary" ]]; then
-    NS_DATABASE="/var/lib/bind/db.${NS_DOMAIN}"
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
+    NS_DATABASE="/var/lib/bind/db.${NS_SERVER_DOMAIN}"
 else
-    NS_DATABASE="/var/lib/bind/${NS_DOMAIN}.saved"
+    NS_DATABASE="/var/lib/bind/${NS_SERVER_DOMAIN}.saved"
 fi
 
 NS_SERVER_COUNT=${NS_SERVER_COUNT:-1}
@@ -59,19 +59,19 @@ NS_SERVER_COUNT=${NS_SERVER_COUNT:-1}
 # Notify Name Server IP Addresses
 NOTIFY_SERVER_IPS=""
 for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
-    record="NS_${i}_SERVER"
+    record="NS_SERVER_${i}_ADDR"
     record="${!record}"
 
     NOTIFY_SERVER_IPS="${NOTIFY_SERVER_IPS}
     ${record} key \"${OCTODNS_KEY_NAME}\";"
 done
 
-if [[ "${NS_ROLE}" == "primary" ]]; then
-# Generate NS_DOMAIN zone
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
+# Generate NS_SERVER_DOMAIN zone
 cat <<EOF > "${NS_DATABASE}"
-\$ORIGIN ${NS_DOMAIN}.
+\$ORIGIN ${NS_SERVER_DOMAIN}.
 \$TTL 1800
-${NS_DOMAIN}. IN SOA ns1.${NS_DOMAIN}. hostmaster.${NS_DOMAIN}. (
+${NS_SERVER_DOMAIN}. IN SOA ns1.${NS_SERVER_DOMAIN}. hostmaster.${NS_SERVER_DOMAIN}. (
                 1       ; serial
                 3h      ; refresh (3 hours)
                 1h      ; retry (1 hour)
@@ -80,25 +80,25 @@ ${NS_DOMAIN}. IN SOA ns1.${NS_DOMAIN}. hostmaster.${NS_DOMAIN}. (
                 )
 EOF
 
-# Add NS record to NS_DOMAIN zone
+# Add NS record to NS_SERVER_DOMAIN zone
 for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
-    record="NS_${i}_SERVER"
+    record="NS_SERVER_${i}_ADDR"
     record="${!record}"
-    echo "${NS_DOMAIN}. 1800 IN NS ns${i}.${NS_DOMAIN}." >> "${NS_DATABASE}"
+    echo "${NS_SERVER_DOMAIN}. 1800 IN NS ns${i}.${NS_SERVER_DOMAIN}." >> "${NS_DATABASE}"
 done
 
-# Add A record for NS to NS_DOMAIN zone
+# Add A record for NS to NS_SERVER_DOMAIN zone
 for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
-    record="NS_${i}_SERVER"
+    record="NS_SERVER_${i}_ADDR"
     record="${!record}"
     echo "ns${i}     1800    IN  A   ${record}" >> "${NS_DATABASE}"
 done
 
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
-// Default ${NS_ROLE} name server zone ${NS_DOMAIN}
-zone "${NS_DOMAIN}." {
-  type ${NS_ROLE};
+// Default ${NS_SERVER_ROLE} name server zone ${NS_SERVER_DOMAIN}
+zone "${NS_SERVER_DOMAIN}." {
+  type ${NS_SERVER_ROLE};
   file "${NS_DATABASE}";
   notify yes;
   allow-transfer {
@@ -114,14 +114,14 @@ EOF
 else
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
-// Default ${NS_ROLE} name server zone ${NS_DOMAIN}
-zone "${NS_DOMAIN}." {
-  type ${NS_ROLE};
+// Default ${NS_SERVER_ROLE} name server zone ${NS_SERVER_DOMAIN}
+zone "${NS_SERVER_DOMAIN}." {
+  type ${NS_SERVER_ROLE};
   file "${NS_DATABASE}";
   primaries { ${NS_1_SERVER} key "${OCTODNS_KEY_NAME}"; };
 };
 EOF
-fi # if [[ "${NS_ROLE}" == "primary" ]]; then
+fi # if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 
 # Debug print
 if [[ -z "${DEBUG}" ]]; then
@@ -152,18 +152,18 @@ IFS=', ' read -r -a _AVAILABLE_ZONES <<< "${AVAILABLE_ZONES}"
 for zone in "${_AVAILABLE_ZONES[@]}"
 do
 
-if [[ "${NS_ROLE}" == "primary" ]]; then
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
     ZONE_DATABASE="/var/lib/bind/db.${zone}"
 else
     ZONE_DATABASE="/var/lib/bind/${zone}.saved"
 fi
 
-if [[ "${NS_ROLE}" == "primary" ]]; then
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 # cat <<EOF > "${ZONE_DATABASE}"
 cat <<EOF > "${ZONE_DATABASE}"
 \$ORIGIN .
 \$TTL 1800	; 30 minutes
-${zone}	IN SOA	ns1.${NS_DOMAIN}. hostmaster.${zone}. (
+${zone}	IN SOA	ns1.${NS_SERVER_DOMAIN}. hostmaster.${zone}. (
 				1       ; serial
 				3h      ; refresh (3 hours)
 				1h      ; retry (1 hour)
@@ -175,7 +175,7 @@ EOF
 
     # Add NS record to zone
     for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
-        echo "			NS ns${i}.${NS_DOMAIN}." >> "${ZONE_DATABASE}"
+        echo "			NS ns${i}.${NS_SERVER_DOMAIN}." >> "${ZONE_DATABASE}"
     done
 
     # Debug print
@@ -192,11 +192,11 @@ fi
 
 # Add zone to NAMED_CONF_FILE as primary
 # Setup allow-transfer for OCTODNS_KEY_NAME and NS${i}_ADDR
-if [[ "${NS_ROLE}" == "primary" ]]; then
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 cat <<EOF >> "${NAMED_CONF_FILE}"
 // ${zone}
 zone "${zone}." {
-  type ${NS_ROLE};
+  type ${NS_SERVER_ROLE};
   file "${ZONE_DATABASE}";
   notify yes;
   allow-transfer {
@@ -216,7 +216,7 @@ else
 cat <<EOF >> "${NAMED_CONF_FILE}"
 // ${zone}
 zone "${zone}." {
-  type ${NS_ROLE};
+  type ${NS_SERVER_ROLE};
   file "${ZONE_DATABASE}";
   primaries { ${NS_1_SERVER} key "${OCTODNS_KEY_NAME}"; };
 };
