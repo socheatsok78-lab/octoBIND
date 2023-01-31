@@ -112,12 +112,18 @@ fi
 # ---
 
 # Secondary Name Server IP Addresses
+NOTIFY_SERVER_IPS=""
 SECONDARY_SERVER_IPS=""
 for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
     record="NS_${i}_SERVER"
     record="${!record}"
-    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
+
+    NOTIFY_SERVER_IPS="${NOTIFY_SERVER_IPS}
     ${record} key \"${OCTODNS_KEY_NAME}\";
+    "
+
+    SECONDARY_SERVER_IPS="${SECONDARY_SERVER_IPS}
+    ${record};
     "
 done
 
@@ -188,11 +194,12 @@ zone "${zone}." {
   notify yes;
   allow-transfer {
     key "${OCTODNS_KEY_NAME}"; # AXFR
-    ${SECONDARY_SERVER_IPS}
   };
   allow-update {
     key "${OCTODNS_KEY_NAME}"; # RFC 2136
-    ${SECONDARY_SERVER_IPS}
+  };
+  also-notify {
+    ${NOTIFY_SERVER_IPS}
   };
 };
 
