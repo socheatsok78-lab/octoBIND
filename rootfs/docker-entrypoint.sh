@@ -16,6 +16,15 @@ cp "${NAMED_CONF_BACKUP_FILE}" "${NAMED_CONF_FILE}"
 
 # ---
 
+echo "Syncing rndc.key from secrets"
+RNDC_KEY_FILE="${RNDC_KEY_FILE:-/var/run/secrets/rndc.key}"
+if [ -f "${RNDC_KEY_FILE}" ]; then
+    mv /etc/bind/rndc.key /etc/bind/rndc.key.origin
+    cp "${RNDC_KEY_FILE}" /etc/bind/rndc.key
+fi
+
+# ---
+
 # OctoDNS ENV
 OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"
 OCTODNS_KEY_FILE="${OCTODNS_KEY_FILE:-/etc/bind/octodns.key}"
@@ -137,6 +146,7 @@ else
     ZONE_DATABASE="/var/lib/bind/${zone}.saved"
 fi
 
+if [[ "${NS_ROLE}" == "primary" ]]; then
 # cat <<EOF > "${ZONE_DATABASE}"
 cat <<EOF > "${ZONE_DATABASE}"
 \$ORIGIN .
@@ -166,6 +176,7 @@ EOF
 
 # Change ZONE_DATABASE ownerships
 chown "${BIND_USER}:${BIND_USER}" "${ZONE_DATABASE}"
+fi
 
 # Add zone to NAMED_CONF_FILE as primary
 # Setup allow-transfer for OCTODNS_KEY_NAME and NS${i}_ADDR
