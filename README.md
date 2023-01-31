@@ -1,4 +1,4 @@
-# dsbind9
+# octoBIND
 A dead-simple DNS server using bind9.
 
 ## Configurations
