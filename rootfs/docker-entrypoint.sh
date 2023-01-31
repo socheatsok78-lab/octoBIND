@@ -124,7 +124,11 @@ EOF
 for zone in "${_AVAILABLE_ZONES[@]}"
 do
 
-ZONE_DATABASE="/var/lib/bind/db.${zone}"
+if [[ "${NS_ROLE}" == "primary" ]]; then
+    ZONE_DATABASE="/var/lib/bind/db.${zone}"
+elif [[ "${NS_ROLE}" == "secondary" ]]; then
+    ZONE_DATABASE="/var/lib/bind/${zone}.saved"
+fi
 
 # cat <<EOF > "${ZONE_DATABASE}"
 cat <<EOF > "${ZONE_DATABASE}"
