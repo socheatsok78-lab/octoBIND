@@ -118,7 +118,7 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 zone "${NS_SERVER_DOMAIN}." {
   type ${NS_SERVER_ROLE};
   file "${NS_DATABASE}";
-  primaries { ${NS_1_SERVER} key "${OCTODNS_KEY_NAME}"; };
+  primaries { ${NS_SERVER_1_ADDR} key "${OCTODNS_KEY_NAME}"; };
 };
 EOF
 fi # if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
@@ -211,14 +211,14 @@ zone "${zone}." {
 
 EOF
 # Add zone to NAMED_CONF_FILE as secondary
-# Setup masters to NS_1_SERVER
+# Setup masters to NS_SERVER_1_ADDR
 else
 cat <<EOF >> "${NAMED_CONF_FILE}"
 // ${zone}
 zone "${zone}." {
   type ${NS_SERVER_ROLE};
   file "${ZONE_DATABASE}";
-  primaries { ${NS_1_SERVER} key "${OCTODNS_KEY_NAME}"; };
+  primaries { ${NS_SERVER_1_ADDR} key "${OCTODNS_KEY_NAME}"; };
 };
 
 EOF
