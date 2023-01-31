@@ -182,6 +182,12 @@ zone "${zone}." {
   type ${NS_ROLE};
   file "${ZONE_DATABASE}";
   primaries { ${NS_1_SERVER}; };
+  allow-transfer {
+    key "${OCTODNS_KEY_NAME}"; # AXFR
+  };
+  allow-update {
+    key "${OCTODNS_KEY_NAME}"; # RFC 2136
+  };
 };
 
 EOF
