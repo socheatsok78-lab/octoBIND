@@ -12,12 +12,20 @@ services:
       NS_1_SERVER: 192.168.131.150
       NS_2_SERVER: 192.168.131.151
       AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
+    volumes:
+      - config:/etc/bind
+      - zones:/var/lib/bind
+      - cache:/var/cache/bind
+      - logs:/var/log
     secrets:
       - octodns.key
-      - rndc.key
 
 secrets:
   octodns.key:
     file: octodns.key
-  rndc.key:
-    file: rndc.key
+
+volumes:
+  config:
+  zones:
+  cache:
+  logs:
