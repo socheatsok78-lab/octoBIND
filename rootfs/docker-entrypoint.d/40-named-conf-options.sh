@@ -23,6 +23,12 @@ else
     NS_FORWARDERS_BLOCK="// forwarders { 0.0.0.0 };"
 fi
 
+# If NS_FORWARDERS is not empty, allow DNS recursion
+NS_RECURSION_BLOCK=""
+if [[ -n "${NS_FORWARDERS}" ]]; then
+    NS_RECURSION_BLOCK="recursion yes;"
+fi
+
 # Create a new NAMED_OPTIONS_FILE from NAMED_OPTIONS_BACKUP_FILE everytime the system boot
 cat <<EOF > "${NAMED_OPTIONS_FILE}"
 options {
