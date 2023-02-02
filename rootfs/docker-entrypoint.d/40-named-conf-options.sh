@@ -23,16 +23,16 @@ else
     NS_FORWARDERS_BLOCK="// forwarders { 0.0.0.0 };"
 fi
 
-# If NS_FORWARDERS is not empty, allow DNS recursion
-NS_RECURSION_BLOCK=""
-if [[ -n "${NS_FORWARDERS}" ]]; then
-    NS_RECURSION_BLOCK="recursion yes;"
-fi
-
 # If NS_FORWARDERS is not empty, allow DNS query
 NS_ALLOW_QUERY_BLOCK=""
 if [[ -n "${NS_FORWARDERS}" ]]; then
     NS_ALLOW_QUERY_BLOCK="allow-query { any; };"
+fi
+
+# If NS_FORWARDERS is not empty, allow DNS recursion
+NS_RECURSION_BLOCK=""
+if [[ -n "${NS_FORWARDERS}" ]]; then
+    NS_RECURSION_BLOCK="recursion yes;"
 fi
 
 # Create a new NAMED_OPTIONS_FILE from NAMED_OPTIONS_BACKUP_FILE everytime the system boot
@@ -50,6 +50,9 @@ options {
     // the all-0's placeholder.
 
     ${NS_FORWARDERS_BLOCK}
+    ${NS_ALLOW_QUERY_BLOCK}
+
+    ${NS_RECURSION_BLOCK}
 
     //========================================================================
     // If BIND logs error messages about the root key being expired,
@@ -58,7 +61,5 @@ options {
     dnssec-validation auto;
 
     listen-on-v6 { any; };
-    ${NS_RECURSION_BLOCK}
-    ${NS_ALLOW_QUERY_BLOCK}
 };
 EOF
