@@ -18,4 +18,14 @@ if [[ -n "${DEBUG}" ]]; then
     echo "Showing ${NAMED_CONF_FILE}:"
     echo "=================================================="
     cat "${NAMED_CONF_FILE}"
+
+    echo "=================================================="
+    echo "Showing zone files:"
+    echo "=================================================="
+    for col in $(ls "/var/lib/bind"); do
+        echo "$col:"
+        echo "|"
+        cat "/var/lib/bind/$col"
+        echo ""
+    done
 fi
