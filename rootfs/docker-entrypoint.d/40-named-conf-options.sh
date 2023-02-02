@@ -29,6 +29,12 @@ if [[ -n "${NS_FORWARDERS}" ]]; then
     NS_RECURSION_BLOCK="recursion yes;"
 fi
 
+# If NS_FORWARDERS is not empty, allow DNS query
+NS_ALLOW_QUERY_BLOCK=""
+if [[ -n "${NS_FORWARDERS}" ]]; then
+    NS_ALLOW_QUERY_BLOCK="allow-query { any; };"
+fi
+
 # Create a new NAMED_OPTIONS_FILE from NAMED_OPTIONS_BACKUP_FILE everytime the system boot
 cat <<EOF > "${NAMED_OPTIONS_FILE}"
 options {
@@ -53,5 +59,6 @@ options {
 
     listen-on-v6 { any; };
     ${NS_RECURSION_BLOCK}
+    ${NS_ALLOW_QUERY_BLOCK}
 };
 EOF
