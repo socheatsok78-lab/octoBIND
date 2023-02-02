@@ -52,5 +52,6 @@ options {
     dnssec-validation auto;
 
     listen-on-v6 { any; };
+    ${NS_RECURSION_BLOCK}
 };
 EOF
