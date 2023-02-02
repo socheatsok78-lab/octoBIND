@@ -1,0 +1,15 @@
+# Bind ENV
+export BIND_USER="bind:bind"
+export NAMED_CONF_FILE="${NAMED_CONF_FILE:-/etc/bind/named.conf.local}"
+
+# OctoDNS ENV
+export OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"
+export OCTODNS_KEY_FILE="${OCTODNS_KEY_FILE:-/etc/bind/octodns.key}"
+
+# Nameserver ENV
+export NS_SERVER_DOMAIN="${NS_SERVER_DOMAIN:-nameserver.corpnet}"
+export NS_SERVER_ROLE=${NS_SERVER_ROLE:-primary} # role: primary or secondary
+export NS_SERVER_COUNT=${NS_SERVER_COUNT:-1}
+
+# Available Zones
+export AVAILABLE_ZONES="${AVAILABLE_ZONES}"
