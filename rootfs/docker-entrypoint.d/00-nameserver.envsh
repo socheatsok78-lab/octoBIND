@@ -1,6 +1,7 @@
 # Bind ENV
 export BIND_USER="bind:bind"
 export NAMED_CONF_FILE="${NAMED_CONF_FILE:-/etc/bind/named.conf.local}"
+export NAMED_OPTIONS_FILE="${NAMED_OPTIONS_FILE:-/etc/bind/named.conf.options}"
 
 # OctoDNS ENV
 export OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"

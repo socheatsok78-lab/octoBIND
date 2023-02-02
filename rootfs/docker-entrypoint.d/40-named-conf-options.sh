@@ -18,7 +18,7 @@ do
     NS_FORWARDERS_BLOCK="${NS_FORWARDERS_BLOCK}${forwarder}; "
 done
 if [[ -n "${NS_FORWARDERS_BLOCK}" ]]; then
-    NS_FORWARDERS_BLOCK="forwarders { ${NS_FORWARDERS_BLOCK} };"
+    NS_FORWARDERS_BLOCK="forwarders { ${NS_FORWARDERS_BLOCK}};"
 else
     NS_FORWARDERS_BLOCK="// forwarders { 0.0.0.0 };"
 fi

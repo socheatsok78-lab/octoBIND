@@ -101,4 +101,3 @@ fi
 echo " - ${zone} => ${ZONE_DATABASE}"
 
 done # for zone in "${_AVAILABLE_ZONES[@]}"
-echo ""
