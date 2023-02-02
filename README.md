@@ -1,6 +1,42 @@
 # octoBIND
 A dead-simple DNS server using bind9.
 
+## Usage
+
+### Using Docker Compose
+
+```yml
+version: "3.10"
+
+services:
+  bind:
+    image: localhost/bind9:latest
+    ports:
+      - 53:53/udp
+      - 53:53/tcp
+      - 127.0.0.1:953:953/tcp
+    environment:
+      DEBUG: 1
+      NS_FORWARDERS: 1.1.1.1
+      NS_SERVER_ROLE: primary
+      NS_SERVER_COUNT: 2
+      NS_SERVER_1_ADDR: 10.10.200.6
+      NS_SERVER_2_ADDR: 10.10.200.7
+      AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
+      OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
+    volumes:
+      - /etc/bind
+      - /var/lib/bind
+      - /var/cache/bind
+      - /var/log/bind
+    secrets:
+      - octodns.key
+
+secrets:
+  octodns.key:
+    file: octodns.key
+```
+
 ## Configurations
 
 You can configure the server using Environment Variables. Here are a few thing you can do.
