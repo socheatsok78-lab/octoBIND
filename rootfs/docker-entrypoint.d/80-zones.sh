@@ -11,6 +11,11 @@ for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
 	${record} key \"${OCTODNS_KEY_NAME}\";"
 done
 
+NOTIFY_SERVER_IPS_BLOCK=""
+if [[ -n "${NOTIFY_SERVER_IPS}" ]]; then
+	NOTIFY_SERVER_IPS_BLOCK="also-notify { ${NOTIFY_SERVER_IPS} };"
+fi
+
 # Prepare NAMED_CONF_FILE
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
@@ -58,9 +63,6 @@ for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
 	echo "			NS ns${i}.${NS_SERVER_DOMAIN}." >> "${ZONE_DATABASE}"
 done
 
-# Change ZONE_DATABASE ownerships
-chown "${BIND_USER}:${BIND_USER}" "${ZONE_DATABASE}"
-
 fi # if [ ! -f "${ZONE_DATABASE}" ]; then
 fi # if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 
@@ -79,8 +81,7 @@ zone "${zone}." {
 	allow-update {
 		key "${OCTODNS_KEY_NAME}"; # RFC 2136
 	};
-	also-notify { ${NOTIFY_SERVER_IPS}
-	};
+	${NOTIFY_SERVER_IPS_BLOCK}
 };
 
 EOF
