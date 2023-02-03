@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -e
 
 # Notify Name Server IP Addresses
 NOTIFY_SERVER_IPS=""

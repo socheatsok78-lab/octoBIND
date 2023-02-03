@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -e
 
 NAMED_OPTIONS_FILE="${NAMED_OPTIONS_FILE:-/etc/bind/named.conf.options}"
 NAMED_OPTIONS_BACKUP_FILE="${NAMED_OPTIONS_FILE}.origin"
@@ -11,6 +11,9 @@ fi
 
 # Generate "forwarders {};" block
 NS_FORWARDERS_BLOCK=""
+NS_RECURSION_BLOCK=""
+NS_ALLOW_QUERY_BLOCK=""
+
 NS_FORWARDERS="${NS_FORWARDERS}"
 IFS=', ' read -r -a _NS_FORWARDERS <<< "${NS_FORWARDERS}"
 for forwarder in "${_NS_FORWARDERS[@]}"
@@ -19,20 +22,12 @@ do
 done
 if [[ -n "${NS_FORWARDERS_BLOCK}" ]]; then
     NS_FORWARDERS_BLOCK="forwarders { ${NS_FORWARDERS_BLOCK}};"
+    NS_RECURSION_BLOCK="recursion yes;"
+    NS_ALLOW_QUERY_BLOCK="allow-query { any; };"
 else
     NS_FORWARDERS_BLOCK="// forwarders { 0.0.0.0 };"
-fi
-
-# If NS_FORWARDERS is not empty, allow DNS query
-NS_ALLOW_QUERY_BLOCK=""
-if [[ -n "${NS_FORWARDERS}" ]]; then
-    NS_ALLOW_QUERY_BLOCK="allow-query { any; };"
-fi
-
-# If NS_FORWARDERS is not empty, allow DNS recursion
-NS_RECURSION_BLOCK=""
-if [[ -n "${NS_FORWARDERS}" ]]; then
-    NS_RECURSION_BLOCK="recursion yes;"
+    NS_RECURSION_BLOCK="// recursion yes;"
+    NS_ALLOW_QUERY_BLOCK="// allow-query { any; };"
 fi
 
 # Create a new NAMED_OPTIONS_FILE from NAMED_OPTIONS_BACKUP_FILE everytime the system boot
@@ -51,7 +46,6 @@ options {
 
     ${NS_FORWARDERS_BLOCK}
     ${NS_ALLOW_QUERY_BLOCK}
-
     ${NS_RECURSION_BLOCK}
 
     //========================================================================

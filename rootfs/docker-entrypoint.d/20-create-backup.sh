@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -e
 
 NAMED_CONF_FILE="${NAMED_CONF_FILE:-/etc/bind/named.conf.local}"
 NAMED_CONF_BACKUP_FILE="${NAMED_CONF_FILE}.origin"

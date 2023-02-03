@@ -22,10 +22,13 @@ if [[ -n "${DEBUG}" ]]; then
     echo "=================================================="
     echo "Showing zone files:"
     echo "=================================================="
-    for col in $(ls "/var/lib/bind"); do
+    for col in /var/lib/bind/db.*; do
+      if [[ "${col}" != *".jnl" ]]; then
         echo "$col:"
         echo "|"
-        cat "/var/lib/bind/$col"
+        cat "$col"
         echo ""
+      fi
+
     done
 fi

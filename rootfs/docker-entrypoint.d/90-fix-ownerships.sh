@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -e
 
 # Change NAMED_CONF_FILE ownerships
 chown "${BIND_USER}" "${NAMED_CONF_FILE}"

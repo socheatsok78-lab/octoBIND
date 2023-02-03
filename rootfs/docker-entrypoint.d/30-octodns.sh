@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -e
 
 # OctoDNS ENV
 OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"

@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -e
 
 NS_SERVER_DOMAIN="${NS_SERVER_DOMAIN:-nameserver.corpnet}"
 NS_SERVER_ROLE=${NS_SERVER_ROLE:-primary} # role: primary or secondary
