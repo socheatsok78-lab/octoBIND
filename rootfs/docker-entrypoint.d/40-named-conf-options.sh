@@ -11,27 +11,38 @@ fi
 
 # Generate "forwarders {};" block
 NS_FORWARDERS_BLOCK=""
-NS_RECURSION_BLOCK=""
-NS_ALLOW_QUERY_BLOCK=""
-
 NS_FORWARDERS="${NS_FORWARDERS}"
 IFS=', ' read -r -a _NS_FORWARDERS <<< "${NS_FORWARDERS}"
 for forwarder in "${_NS_FORWARDERS[@]}"
 do
     NS_FORWARDERS_BLOCK="${NS_FORWARDERS_BLOCK}${forwarder}; "
 done
+
+# Generate NS_ADDITIONAL_OPTIONS
+NS_ADDITIONAL_OPTIONS=""
 if [[ -n "${NS_FORWARDERS_BLOCK}" ]]; then
-    NS_FORWARDERS_BLOCK="forwarders { ${NS_FORWARDERS_BLOCK}};"
-    NS_RECURSION_BLOCK="recursion yes;"
-    NS_ALLOW_QUERY_BLOCK="allow-query { any; };"
+    NS_ADDITIONAL_OPTIONS="
+    recursion yes;
+    allow-query { corpnets; };
+    allow-recursion { corpnets; };
+    forwarders { ${NS_FORWARDERS_BLOCK}};
+    "
 else
-    NS_FORWARDERS_BLOCK="// forwarders { 0.0.0.0 };"
-    NS_RECURSION_BLOCK="// recursion yes;"
-    NS_ALLOW_QUERY_BLOCK="// allow-query { any; };"
+    NS_ADDITIONAL_OPTIONS="
+    // recursion yes;
+    // allow-query { corpnets; };
+    // allow-recursion { corpnets; };
+    // forwarders { 0.0.0.0 };
+    "
 fi
 
 # Create a new NAMED_OPTIONS_FILE from NAMED_OPTIONS_BACKUP_FILE everytime the system boot
 cat <<EOF > "${NAMED_OPTIONS_FILE}"
+// Default ACL for corporation networks
+// Matches any host on an IPv4 or IPv6 network for which the system has an interface.
+acl corpnets { localhost; localnets; };
+
+// Default nameserver options
 options {
     directory "/var/cache/bind";
 
@@ -43,10 +54,7 @@ options {
     // nameservers, you probably want to use them as forwarders.
     // Uncomment the following block, and insert the addresses replacing
     // the all-0's placeholder.
-
-    ${NS_FORWARDERS_BLOCK}
-    ${NS_ALLOW_QUERY_BLOCK}
-    ${NS_RECURSION_BLOCK}
+    ${NS_ADDITIONAL_OPTIONS}
 
     //========================================================================
     // If BIND logs error messages about the root key being expired,
