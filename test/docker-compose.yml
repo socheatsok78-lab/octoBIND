@@ -6,13 +6,12 @@ services:
       - 53:53/tcp
       - 127.0.0.1:953:953/tcp
     environment:
-      DEBUG: true
+      DEBUG: "true"
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
-      NS_FORWARDERS: 1.1.1.1
       NS_SERVER_ROLE: primary
-      NS_SERVER_COUNT: 1
-      NS_SERVER_1_ADDR: 10.10.100.96
-      NS_SERVER_2_ADDR: 192.168.131.151
+      NS_SERVER_COUNT: 2
+      NS_SERVER_1_ADDR: 10.10.100.6
+      NS_SERVER_2_ADDR: 10.10.100.7
       ZONES_AVAILABLE: sorakh.local,terra.sorakh.one
     volumes:
       - config:/etc/bind
