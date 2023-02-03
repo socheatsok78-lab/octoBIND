@@ -25,13 +25,13 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 
 EOF
 
-AVAILABLE_ZONES="${AVAILABLE_ZONES}"
-IFS=', ' read -r -a _AVAILABLE_ZONES <<< "${AVAILABLE_ZONES}"
+ZONES_AVAILABLE="${ZONES_AVAILABLE}"
+IFS=', ' read -r -a _ZONES_AVAILABLE <<< "${ZONES_AVAILABLE}"
 
-# Loop over AVAILABLE_ZONES list
+# Loop over ZONES_AVAILABLE list
 # Generate stub zone file for each domain
 # Add zone to NAMED_CONF_FILE
-for zone in "${_AVAILABLE_ZONES[@]}"
+for zone in "${_ZONES_AVAILABLE[@]}"
 do
 
 if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
@@ -101,4 +101,4 @@ fi
 
 echo " - ${zone} => ${ZONE_DATABASE}"
 
-done # for zone in "${_AVAILABLE_ZONES[@]}"
+done # for zone in "${_ZONES_AVAILABLE[@]}"

@@ -13,4 +13,4 @@ export NS_SERVER_ROLE=${NS_SERVER_ROLE:-primary} # role: primary or secondary
 export NS_SERVER_COUNT=${NS_SERVER_COUNT:-1}
 
 # Available Zones
-export AVAILABLE_ZONES="${AVAILABLE_ZONES}"
+export ZONES_AVAILABLE="${ZONES_AVAILABLE}"

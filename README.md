@@ -22,7 +22,7 @@ services:
       NS_SERVER_COUNT: 2
       NS_SERVER_1_ADDR: 10.10.200.6
       NS_SERVER_2_ADDR: 10.10.200.7
-      AVAILABLE_ZONES: sorakh.local,terra.sorakh.one
+      ZONES_AVAILABLE: sorakh.local,terra.sorakh.one
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
     volumes:
       - /etc/bind
@@ -48,7 +48,7 @@ NS_SERVER_DOMAIN=nameserver.local
 NS_SERVER_ROLE=primary
 NS_SERVER_COUNT=1
 NS_SERVER_1_ADDR=192.168.131.151
-AVAILABLE_ZONES=exxample.com.local,exxample.net.local
+ZONES_AVAILABLE=exxample.com.local,exxample.net.local
 ```
 
 ### Name Server configuration (Required)
@@ -61,8 +61,8 @@ e.g. If the `NS_SERVER_COUNT=2`, the server will expect you to set `NS_SERVER_1_
 
 ### Add zone configurations (Required)
 
-- **AVAILABLE_ZONES**: A comma-separated string for available zones.  
-e.g. `AVAILABLE_ZONES=exxample.com.local,exxample.net.local`
+- **ZONES_AVAILABLE**: A comma-separated string for available zones.  
+e.g. `ZONES_AVAILABLE=exxample.com.local,exxample.net.local`
 
 ---
 
@@ -93,11 +93,11 @@ e.g. `AVAILABLE_ZONES=exxample.com.local,exxample.net.local`
 
 ### Stage 3
 ####  Primary Server
-1. Parse `AVAILABLE_ZONES` value and generate zone file for each item in the list. ***(The `AVAILABLE_ZONES` can be set a comma-separated value)***.
+1. Parse `ZONES_AVAILABLE` value and generate zone file for each item in the list. ***(The `ZONES_AVAILABLE` can be set a comma-separated value)***.
 1. Append each zone config to `named.conf.local`
 
 #### Secondary Server
-1. Parse `AVAILABLE_ZONES` value and append each zone config to `named.conf.local`. ***(The `AVAILABLE_ZONES` can be set a comma-separated value)***.
+1. Parse `ZONES_AVAILABLE` value and append each zone config to `named.conf.local`. ***(The `ZONES_AVAILABLE` can be set a comma-separated value)***.
 
 ### Stage 4
 
