@@ -2,12 +2,12 @@
 set -e
 
 check_env() {
-    if [[ -z "${!1}" ]]; then
-        echo "[ERR]: The ${1} environment variable is missing."
-        return 1
-    fi
+	if [[ -z "${!1}" ]]; then
+		echo "[ERR]: The ${1} environment variable is missing."
+		return 1
+	fi
 
-    return
+	return
 }
 
 # Verify that NS_SERVER_COUNT value is set
