@@ -1,21 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-# Notify Name Server IP Addresses
-NOTIFY_SERVER_IPS=""
-for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
-	record="NS_SERVER_${i}_ADDR"
-	record="${!record}"
-
-	NOTIFY_SERVER_IPS="${NOTIFY_SERVER_IPS}
-	${record} key \"${OCTODNS_KEY_NAME}\";"
-done
-
-NOTIFY_SERVER_IPS_BLOCK=""
-if [[ -n "${NOTIFY_SERVER_IPS}" ]]; then
-	NOTIFY_SERVER_IPS_BLOCK="also-notify { ${NOTIFY_SERVER_IPS} };"
-fi
-
 # Prepare NAMED_CONF_FILE
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
@@ -68,36 +53,14 @@ fi # if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 
 # Add zone to NAMED_CONF_FILE as primary
 # Setup allow-transfer for OCTODNS_KEY_NAME and NS${i}_ADDR
-if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 cat <<EOF >> "${NAMED_CONF_FILE}"
 // ${zone}
 zone "${zone}." {
 	type ${NS_SERVER_ROLE};
 	file "${ZONE_DATABASE}";
-	notify yes;
-	allow-transfer {
-		key "${OCTODNS_KEY_NAME}"; # AXFR
-	};
-	allow-update {
-		key "${OCTODNS_KEY_NAME}"; # RFC 2136
-	};
-	${NOTIFY_SERVER_IPS_BLOCK}
 };
 
 EOF
-# Add zone to NAMED_CONF_FILE as secondary
-# Setup masters to NS_SERVER_1_ADDR
-else
-cat <<EOF >> "${NAMED_CONF_FILE}"
-// ${zone}
-zone "${zone}." {
-	type ${NS_SERVER_ROLE};
-	file "${ZONE_DATABASE}";
-	primaries { ${NS_SERVER_1_ADDR} key "${OCTODNS_KEY_NAME}"; };
-};
-
-EOF
-fi
 
 echo " - ${zone} => ${ZONE_DATABASE}"
 

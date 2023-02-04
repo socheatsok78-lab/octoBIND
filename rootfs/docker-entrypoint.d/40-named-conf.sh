@@ -25,8 +25,6 @@ for((i=2;i<="${NS_SERVER_COUNT}";i++)); do
 	${record} key \"${OCTODNS_KEY_NAME}\";"
 done
 
-if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
-
 # Generate NS_SERVER_DOMAIN zone
 cat <<EOF > "${NS_DATABASE}"
 \$ORIGIN ${NS_SERVER_DOMAIN}.
@@ -67,28 +65,5 @@ cat <<EOF >> "${NAMED_CONF_FILE}"
 zone "${NS_SERVER_DOMAIN}." {
 	type ${NS_SERVER_ROLE};
 	file "${NS_DATABASE}";
-	notify yes;
-	allow-transfer {
-		key "${OCTODNS_KEY_NAME}"; # AXFR
-	};
-	allow-update {
-		key "${OCTODNS_KEY_NAME}"; # RFC 2136
-	};
-	${NOTIFY_SERVER_IPS_BLOCK}
 };
 EOF
-
-else
-
-# Add primary NS_SERVER_DOMAIN zone config to NAMED_CONF_FILE
-cat <<EOF >> "${NAMED_CONF_FILE}"
-
-// Default ${NS_SERVER_ROLE} name server zone ${NS_SERVER_DOMAIN}
-zone "${NS_SERVER_DOMAIN}." {
-	type ${NS_SERVER_ROLE};
-	file "${NS_DATABASE}";
-	primaries { ${NS_SERVER_1_ADDR} key "${OCTODNS_KEY_NAME}"; };
-};
-EOF
-
-fi # if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
