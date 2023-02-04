@@ -52,12 +52,6 @@ for((i=1;i<="${NS_SERVER_COUNT}";i++)); do
 	echo "ns${i}				1800	IN	A	${record}" >> "${NS_DATABASE}"
 done
 
-NOTIFY_SERVER_IPS_BLOCK=""
-if [[ -n "${NOTIFY_SERVER_IPS}" ]]; then
-	NOTIFY_SERVER_IPS_BLOCK="also-notify { ${NOTIFY_SERVER_IPS} };"
-fi
-
-
 # Add primary NS_SERVER_DOMAIN zone config to NAMED_CONF_FILE
 cat <<EOF >> "${NAMED_CONF_FILE}"
 
