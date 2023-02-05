@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-# OctoDNS ENV
 OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"
 OCTODNS_KEY_FILE="${OCTODNS_KEY_FILE:-/etc/bind/octodns.key}"
 
@@ -17,5 +16,6 @@ echo " - Loading ${OCTODNS_KEY_NAME} key from ${OCTODNS_KEY_FILE}"
 echo "// OctoDNS Key" >> "${NAMED_CONF_FILE}"
 cat "${OCTODNS_KEY_FILE}" >> "${NAMED_CONF_FILE}"
 
-echo " - Fixing ${OCTODNS_KEY_FILE} permission"
-chown "${BIND_USER}" "${NAMED_CONF_FILE}"
+if [ ! -f "${OCTODNS_KEY_FILE}" ]; then
+    cp "${OCTODNS_KEY_FILE}" "/etc/bind"
+fi

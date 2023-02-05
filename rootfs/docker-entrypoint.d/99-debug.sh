@@ -5,7 +5,12 @@ if [[ -n "${DEBUG}" ]]; then
 	echo "=================================================="
 	echo "Showing ${OCTODNS_KEY_FILE}:"
 	echo "=================================================="
-	cat "${OCTODNS_KEY_FILE}"
+	for col in /etc/bind/*.key; do
+		echo "$col:"
+		echo "|"
+		cat "$col"
+		echo ""
+	done
 	echo ""
 
 	echo "=================================================="
@@ -29,6 +34,5 @@ if [[ -n "${DEBUG}" ]]; then
 		cat "$col"
 		echo ""
 	  fi
-
 	done
 fi
