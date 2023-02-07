@@ -1,8 +1,6 @@
 #!/usr/bin/bash
 set -e
 
-set -e
-
 entrypoint_log() {
 	if [ -z "${QUIET_LOGS:-}" ]; then
 		echo "$@"

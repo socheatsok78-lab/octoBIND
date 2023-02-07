@@ -1,0 +1,58 @@
+{{ getenv "OCTODNS_KEY" }}
+
+// Default ACL for corporation networks
+// Matches any host on an IPv4 or IPv6 network for which the system has an interface.
+acl acl-ns-primaries { {{ if getenv "NS_PRIMARIES_ADDR" "" }}{{ range getenv "NS_PRIMARIES_ADDR" "" | strings.SplitN "," -1 }}
+    {{ . | strings.Trim " "}};{{ end }}{{ end }}
+};
+
+acl acl-ns-secondaries { {{ if getenv "NS_SECONDARIES_ADDR" "" }}{{ range getenv "NS_SECONDARIES_ADDR" "" | strings.SplitN "," -1 }}
+    {{ . | strings.Trim " "}};{{ end }}{{ end }}
+};
+
+acl acl-corpnets { localhost; localnets; };
+
+// A lists of primary servers
+primaries ns-primaries { acl-ns-primaries key "{{ getenv "OCTODNS_KEY_NAME" }}"; };
+
+options {
+    directory "/var/cache/bind";
+
+    // If there is a firewall between you and nameservers you want
+    // to talk to, you may need to fix the firewall to allow multiple
+    // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+{{ if getenv "NS_FORWARDERS_ADDR" "" }}
+    recursion yes;
+    allow-query { any; };
+    allow-recursion { acl-corpnets; };
+{{ end }}
+    // If your ISP provided one or more IP addresses for stable
+    // nameservers, you probably want to use them as forwarders.
+    // Uncomment the following block, and insert the addresses replacing
+    // the all-0's placeholder.
+{{ if getenv "NS_FORWARDERS_ADDR" "" }}
+    forwarders { {{ range getenv "NS_FORWARDERS_ADDR" "" | strings.SplitN "," -1 }}
+        {{ . | strings.Trim " "}};{{ end }}
+    };
+{{ else }}
+    // forwarders {
+    //      0.0.0.0;
+    // };
+{{ end }}
+    //========================================================================
+    // If BIND logs error messages about the root key being expired,
+    // you will need to update your keys.  See https://www.isc.org/bind-keys
+    //========================================================================
+    dnssec-validation auto;
+
+    listen-on-v6 { any; };
+
+    // Enable NOTIFY when zone changes occur
+    notify yes;
+
+    // Allow outgoing zone transfers
+    allow-transfer  { key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # AXFR
+
+    // Allow submit dynamic updates for primary zones
+    allow-update    { key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # RFC 2136
+};
