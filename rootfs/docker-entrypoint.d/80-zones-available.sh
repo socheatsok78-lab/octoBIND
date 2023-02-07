@@ -21,6 +21,7 @@ cat <<EOF > "${ZONE_DATABASE}"
 \$ORIGIN .
 \$TTL 1800	; 30 minutes
 ${ZONE}	IN SOA	ns.${NS_SERVER_DOMAIN}. hostmaster.${ZONE}. (
+				1       ; serial
 				${ZONE_REFRESH}      ; refresh (3 hours)
 				${ZONE_RETRY}      ; retry (1 hour)
 				${ZONE_EXPIRE}      ; expire (1 week)
