@@ -4,7 +4,7 @@ set -e
 # Nameserver
 NS_SERVER_DOMAIN="${NS_SERVER_DOMAIN:-nameserver.corpnet}"
 NS_SERVER_ROLE=${NS_SERVER_ROLE:-primary} # role: primary or secondary
-NS_DATABASE="/var/lib/bind/db.${NS_SERVER_DOMAIN}"
+NS_DATABASE="/var/lib/bind/db.nameserver"
 
 if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 
