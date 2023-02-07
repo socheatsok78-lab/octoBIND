@@ -27,7 +27,7 @@ options {
 {{ if getenv "NS_FORWARDERS_ADDR" "" }}
     recursion yes;
     allow-query { any; };
-    allow-recursion { acl-corpnets; };
+    allow-recursion { any; };
 {{ end }}
     // If your ISP provided one or more IP addresses for stable
     // nameservers, you probably want to use them as forwarders.
