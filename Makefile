@@ -6,5 +6,8 @@ build:
 	@chmod +x rootfs/docker-entrypoint.d/*.sh || true
 	@docker build -f "Dockerfile" -t "${DOCKER_IMAGE}" "."
 
+push:
+	@docker push "${DOCKER_IMAGE}"
+
 run:
 	@docker run --rm -it "${DOCKER_IMAGE}"
