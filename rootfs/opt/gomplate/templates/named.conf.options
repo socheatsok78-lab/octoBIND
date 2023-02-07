@@ -13,7 +13,12 @@ acl acl-ns-secondaries { {{ if getenv "NS_SECONDARIES_ADDR" "" }}{{ range getenv
 acl acl-corpnets { localhost; localnets; };
 
 // A lists of primary servers
-primaries ns-primaries { acl-ns-primaries key "{{ getenv "OCTODNS_KEY_NAME" }}"; };
+primaries ns-primaries          { acl-ns-primaries key "{{ getenv "OCTODNS_KEY_NAME" }}"; };
+
+// A lists of other primary servers to also notify
+primaries ns-notify-primaries   { {{ if getenv "NS_ALSO_NOTIFY_ADDR" "" }}{{ range getenv "NS_ALSO_NOTIFY_ADDR" "" | strings.SplitN "," -1 }}
+    {{ . | strings.Trim " "}} key "{{ getenv "OCTODNS_KEY_NAME" }}";{{ end }}{{ end }}
+};
 
 options {
     directory "/var/cache/bind";
@@ -55,4 +60,7 @@ options {
 
     // Allow submit dynamic updates for primary zones
     allow-update    { key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # RFC 2136
+
+    // Also notify the following servers
+    also-notify    { ns-notify-primaries; };
 };

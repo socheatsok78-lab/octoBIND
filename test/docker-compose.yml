@@ -10,12 +10,12 @@ services:
     environment:
       DEBUG: "true"
       NS_SERVER_ROLE: primary
-      NS_PRIMARIES_ADDR: 10.10.100.6, 10.10.100.7
+      NS_PRIMARIES_ADDR: 10.10.100.6
       NS_SECONDARIES_ADDR: 10.10.100.6, 10.10.100.7
+      NS_ALSO_NOTIFY_ADDR: 10.10.200.6, 10.10.200.7
       NS_FORWARDERS_ADDR: 8.8.8.8, 8.8.4.4
       ZONES_AVAILABLE: sorakh.local,terra.sorakh.one
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
-      SECRET_FILE: /var/run/secrets/octodns.key
     volumes:
       - config:/etc/bind
       - zones:/var/lib/bind

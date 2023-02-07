@@ -5,3 +5,25 @@
 // Consider adding the 1918 zones here, if they are not used in your
 // organization
 //include "/etc/bind/zones.rfc1918";
+
+//
+// !!! Please do no manually modify any content below !!!
+//     The content are automatically generated.
+//
+
+//
+// Default {{ getenv "NS_SERVER_ROLE" "primary" }} name server zone {{ getenv "NS_SERVER_DOMAIN" }}
+//
+zone "{{ getenv "NS_SERVER_DOMAIN" }}." in {
+    type {{ getenv "NS_SERVER_ROLE" "primary" }};
+    file "/var/lib/bind/db.nameserver";
+};
+
+//
+// Do any available zones configuration here
+// {{ range getenv "ZONES_AVAILABLE" "" | strings.SplitN "," -1 }}
+zone "{{ . | strings.Trim " "}}." in {
+    type {{ getenv "NS_SERVER_ROLE" "primary" }};
+    file "/var/lib/bind/db.{{ . | strings.Trim " "}}";
+};
+{{ end }}
