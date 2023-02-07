@@ -1,24 +1,22 @@
 {{ getenv "OCTODNS_KEY" }}
 
-// Default ACL for corporation networks
-// Matches any host on an IPv4 or IPv6 network for which the system has an interface.
-acl acl-ns-primaries { {{ if getenv "NS_PRIMARIES_ADDR" "" }}{{ range getenv "NS_PRIMARIES_ADDR" "" | strings.SplitN "," -1 }}
-    {{ . | strings.Trim " "}};{{ end }}{{ end }}
-};
-
-acl acl-ns-secondaries { {{ if getenv "NS_SECONDARIES_ADDR" "" }}{{ range getenv "NS_SECONDARIES_ADDR" "" | strings.SplitN "," -1 }}
-    {{ . | strings.Trim " "}};{{ end }}{{ end }}
-};
-
-acl acl-corpnets { localhost; localnets; };
-
 // A lists of primary servers
-primaries ns-primaries          { acl-ns-primaries key "{{ getenv "OCTODNS_KEY_NAME" }}"; };
+primaries ns-primaries          { {{ if getenv "NS_PRIMARIES_ADDR" "" }}{{ range getenv "NS_PRIMARIES_ADDR" "" | strings.SplitN "," -1 }}
+    {{ . | strings.Trim " "}} key "{{ getenv "OCTODNS_KEY_NAME" }}";{{ end }}{{ end }}
+};
 
 // A lists of other primary servers to also notify
 primaries ns-notify-primaries   { {{ if getenv "NS_ALSO_NOTIFY_ADDR" "" }}{{ range getenv "NS_ALSO_NOTIFY_ADDR" "" | strings.SplitN "," -1 }}
     {{ . | strings.Trim " "}} key "{{ getenv "OCTODNS_KEY_NAME" }}";{{ end }}{{ end }}
 };
+
+// Default ACL for corporation networks
+// Matches any host on an IPv4 or IPv6 network for which the system has an interface.
+acl acl-ns-secondaries { {{ if getenv "NS_SECONDARIES_ADDR" "" }}{{ range getenv "NS_SECONDARIES_ADDR" "" | strings.SplitN "," -1 }}
+    {{ . | strings.Trim " "}};{{ end }}{{ end }}
+};
+
+acl acl-corpnets { localhost; localnets; };
 
 options {
     directory "/var/cache/bind";
