@@ -6,6 +6,7 @@ A dead-simple DNS server using bind9.
 ### Using Docker Compose
 
 ```yml
+# docker-compose.yml
 version: "3.10"
 
 services:
@@ -16,12 +17,11 @@ services:
       - 53:53/tcp
       - 127.0.0.1:953:953/tcp
     environment:
-      DEBUG: 1
-      NS_FORWARDERS: 1.1.1.1
+      DEBUG: "true"
       NS_SERVER_ROLE: primary
-      NS_SERVER_COUNT: 2
-      NS_SERVER_1_ADDR: 10.10.200.6
-      NS_SERVER_2_ADDR: 10.10.200.7
+      NS_PRIMARIES_ADDR: 10.10.100.6
+      NS_SECONDARIES_ADDR: 10.10.100.6, 10.10.100.7
+      NS_FORWARDERS_ADDR: 8.8.8.8, 8.8.4.4
       ZONES_AVAILABLE: sorakh.local,terra.sorakh.one
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
     volumes:
@@ -37,71 +37,73 @@ secrets:
     file: octodns.key
 ```
 
+Run `docker compose up -d` to start the service.
+
 ## Configurations
 
 You can configure the server using Environment Variables. Here are a few thing you can do.
 
 #### Example
 
-```env
-NS_SERVER_DOMAIN=nameserver.local
-NS_SERVER_ROLE=primary
-NS_SERVER_COUNT=1
-NS_SERVER_1_ADDR=192.168.131.151
-ZONES_AVAILABLE=exxample.com.local,exxample.net.local
+```sh
+NS_SERVER_DOMAIN="${NS_SERVER_DOMAIN:-nameserver.corpnet}"
+NS_SERVER_ROLE="${NS_SERVER_ROLE:-primary}"
+
+# Primary nameserver addresses
+NS_PRIMARY_IPS=<Primary nameserver IP addresses>
+
+# Secondary nameserver addresses
+NS_SECONDARY_IPS=<Secondary nameserver IP addresses>
+
+# (Optional) Other primary nameserver to get notify by this server
+NS_ALSO_NOTIFY_ADDR=<Other Primary nameserver IP addresses>
+
+# (Optional) Forwarder addresses
+# Google Public DNS
+NS_FORWARDERS_ADDR=8.8.8.8,8.8.4.4
+
+# Cloudflare \w Malware Blocking
+# NS_FORWARDERS_ADDR=1.1.1.1,1.0.0.1
+
+# Cloudflare \w Malware Blocking
+# NS_FORWARDERS_ADDR=1.1.1.2,1.0.0.2
+
+# Cloudflare \w Malware and Adult Content Blocking
+# NS_FORWARDERS_ADDR=1.1.1.3,1.0.0.3
+
+# Available zones
+ZONES_AVAILABLE=example.com, example.local
+
+# OctoDNS Key
+OCTODNS_KEY_NAME=octodns-key
+OCTODNS_KEY_FILE=/etc/bind/octodns.key
 ```
 
 ### Name Server configuration (Required)
 
 - **NS_SERVER_DOMAIN**: A FQDN or local domain for the Nameserver, e.g. `nameserver.localhost` (default: `nameserver.localhost`)
 - **NS_SERVER_ROLE**: The Nameserver role, `primary` or `secondary` (default: `primary`)
-- **NS_SERVER_COUNT**: The number of available Nameservers (default: 1)
-- **NS_SERVER_${i}_ADDR**: The IP Address of the current/next Nameserver based on the `NS_SERVER_COUNT` value.  
-e.g. If the `NS_SERVER_COUNT=2`, the server will expect you to set `NS_SERVER_1_ADDR` and `NS_SERVER_2_ADDR` value. ***(Replace the ${i} with an index starting from `1`)***
+- **NS_PRIMARY_IPS**: A comma-separated string for primary nameservers.
+- **NS_SECONDARY_IPS**: A comma-separated string for secondary nameservers.
+- **NS_FORWARDERS_ADDR**: ***(Optional)*** A comma-separated string for forwarding as recursive nameserver.
 
 ### Add zone configurations (Required)
 
-- **ZONES_AVAILABLE**: A comma-separated string for available zones.  
+- **ZONES_AVAILABLE**: A comma-separated string for available zones.
 e.g. `ZONES_AVAILABLE=exxample.com.local,exxample.net.local`
 
+### Advanced configurations
+
+- **NS_ALSO_NOTIFY_ADDR**: ***(Optional)*** A comma-separated string for other primary nameservers to notify.
+- **OCTODNS_KEY_NAME**: ***(Optional)*** The default key name for OctoDNS.
+- **OCTODNS_KEY_FILE**: ***(Optional)*** The default key file for OctoDNS.
 ---
 
-## What this does?
+## Zone Management with OctoDNS
 
-### Stage 1
-1. Backup `/etc/bind/named.conf.local` to `/etc/bind/named.conf.local.origin`
-1. Generate a new copy of `named.conf.local` from `named.conf.local.origin`
-1. If `RNDC_KEY_FILE` env is set
-    - Backup `/etc/bind/rndc.key` to `/etc/bind/rndc.key.origin`
-    - Replace `rndc.key` with the `RNDC_KEY_FILE` file content.
-1. Generate a new key using `rndc-confgen` for `OCTODNS_KEY_NAME` and `OCTODNS_KEY_FILE`
-1. Read key from `OCTODNS_KEY_FILE` and append it to `named.conf.local`
+In the vein of infrastructure as code OctoDNS provides a set of tools & patterns that make it easy to manage your DNS records across multiple providers. The resulting config can live in a repository and be deployed just like the rest of your code, maintaining a clear history and using your existing review & workflow.
 
-### Stage 2
-#### Primary Server
-1. Append zone config for top-level Nameserver to `named.conf.local`
-1. Generate zone file for the top-level Nameserver with `NS_SERVER_DOMAIN` and `NS_SERVER_ROLE`
-    - `NS_SERVER_DOMAIN`: A FQDN or local domain for the Nameserver, e.g. `nameserver.localhost` (default: `nameserver.localhost`)
-    - `NS_SERVER_ROLE`: The Nameserver role, `primary` or `secondary` (default: `primary`)
-1. Parse and populate available Nameservers via `NS_SERVER_COUNT` and add to the top-level Nameserver zone file.
-    - `NS_SERVER_COUNT`: The number of available Nameservers (default: 1)
-    - `NS_SERVER_${i}_ADDR`: The IP Address of the current/next Nameserver based on the `NS_SERVER_COUNT` value.  
-    e.g. If the `NS_SERVER_COUNT=2`, the server will expect you to set `NS_SERVER_1_ADDR` and `NS_SERVER_2_ADDR` value. ***(Replace the ${i} with an index starting from `1`)***
-
-#### Secondary Server
-1. Append zone config for top-level Nameserver to `named.conf.local`
-
-### Stage 3
-####  Primary Server
-1. Parse `ZONES_AVAILABLE` value and generate zone file for each item in the list. ***(The `ZONES_AVAILABLE` can be set a comma-separated value)***.
-1. Append each zone config to `named.conf.local`
-
-#### Secondary Server
-1. Parse `ZONES_AVAILABLE` value and append each zone config to `named.conf.local`. ***(The `ZONES_AVAILABLE` can be set a comma-separated value)***.
-
-### Stage 4
-
-Start `named` service with `/etc/bind/named.conf` config.
+Check out https://github.com/octodns/octodns for documentations.
 
 ## License
 Licensed under [MIT License](LICENSE).
