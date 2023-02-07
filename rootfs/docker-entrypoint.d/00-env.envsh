@@ -20,3 +20,14 @@ export NS_SERVER_ROLE="${NS_SERVER_ROLE:-primary}"
 # OctoDNS Key
 export OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"
 export OCTODNS_KEY_FILE="${OCTODNS_KEY_FILE:-/etc/bind/octodns.key}"
+
+# Default zone configurations
+ZONE_DEFAULT_MNAME="ns.${NS_SERVER_DOMAIN}"
+ZONE_DEFAULT_RNAME="hostmaster.${NS_SERVER_DOMAIN}"
+
+export ZONE_MNAME="${ZONE_MNAME-$ZONE_DEFAULT_MNAME}"
+export ZONE_RNAME="${ZONE_RNAME-$ZONE_DEFAULT_RNAME}"
+export ZONE_REFRESH="${ZONE_REFRESH:-3h}"
+export ZONE_RETRY="${ZONE_RETRY:-1h}"
+export ZONE_EXPIRE="${ZONE_EXPIRE:-1w}"
+export ZONE_TTL="${ZONE_TTL:-30m}"

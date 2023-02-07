@@ -20,12 +20,11 @@ if [ ! -f "${ZONE_DATABASE}" ]; then
 cat <<EOF > "${ZONE_DATABASE}"
 \$ORIGIN .
 \$TTL 1800	; 30 minutes
-${ZONE}	IN SOA	ns1.${NS_SERVER_DOMAIN}. hostmaster.${ZONE}. (
-				1       ; serial
-				3h      ; refresh (3 hours)
-				1h      ; retry (1 hour)
-				1w      ; expire (1 week)
-				30m     ; minimum (30 minutes)
+${ZONE}	IN SOA	ns.${NS_SERVER_DOMAIN}. hostmaster.${ZONE}. (
+				${ZONE_REFRESH}      ; refresh (3 hours)
+				${ZONE_RETRY}      ; retry (1 hour)
+				${ZONE_EXPIRE}      ; expire (1 week)
+				${ZONE_TTL}     ; minimum (30 minutes)
 				)
 EOF
 # cat <<EOF > "${ZONE_DATABASE}"
