@@ -6,6 +6,8 @@ NS_SERVER_DOMAIN="${NS_SERVER_DOMAIN:-nameserver.corpnet}"
 NS_SERVER_ROLE=${NS_SERVER_ROLE:-primary} # role: primary or secondary
 NS_DATABASE="/var/lib/bind/db.${NS_SERVER_DOMAIN}"
 
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
+
 # Generate NS_SERVER_DOMAIN zone
 cat <<EOF > "${NS_DATABASE}"
 \$ORIGIN ${NS_SERVER_DOMAIN}.
@@ -35,3 +37,5 @@ do
     ((_index=_index+1))
 done
 unset _index
+
+fi # if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then

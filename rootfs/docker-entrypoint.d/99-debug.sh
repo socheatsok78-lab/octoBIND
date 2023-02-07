@@ -16,8 +16,10 @@ echo ""
 print_file_debug "/etc/bind/named.conf.options"
 print_file_debug "/etc/bind/named.conf.local"
 
+if [[ "${NS_SERVER_ROLE}" == "primary" ]]; then
 for col in /var/lib/bind/db.*; do
     if [[ "${col}" != *".jnl" ]]; then
         print_file_debug "$col"
     fi
 done
+fi

@@ -20,12 +20,15 @@ zone "{{ getenv "NS_SERVER_DOMAIN" }}." in {
     {{ if ne (getenv "NS_SERVER_ROLE") "primary" }}primaries { ns-primaries; };{{ end }}
 };
 
+{{ if getenv "ZONES_AVAILABLE" }}
 //
 // Do any available zones configuration here
-// {{ range getenv "ZONES_AVAILABLE" "" | strings.SplitN "," -1 }}
+// {{ range getenv "ZONES_AVAILABLE" | strings.SplitN "," -1 }}
 zone "{{ . | strings.Trim " "}}." in {
     type {{ getenv "NS_SERVER_ROLE" "primary" }};
     file "/var/lib/bind/db.{{ . | strings.Trim " "}}";
     {{ if ne (getenv "NS_SERVER_ROLE") "primary" }}primaries { ns-primaries; };{{ end }}
 };
+{{ end }}
+// End available zones
 {{ end }}
