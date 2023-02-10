@@ -1,7 +1,19 @@
 # octoBIND
-A dead-simple DNS server using bind9.
+A dead-simple DNS server using bind9, configure for using with [octoDNS](https://github.com/octodns/octodns).
+
+## Build
+
+Run the following command to build the Docker Image:
+
+```sh
+make
+// or 
+make build
+```
 
 ## Usage
+
+Before you can use the Docker Compose, please build you own Docker Image following the above example.
 
 ### Using Docker Compose
 
