@@ -32,9 +32,9 @@ services:
       DEBUG: "true"
       NS_SERVER_ROLE: primary
       NS_PRIMARIES_ADDR: 10.10.100.6
-      NS_SECONDARIES_ADDR: 10.10.100.6, 10.10.100.7
+      NS_SECONDARIES_ADDR: 10.10.100.6,10.10.100.7
       NS_FORWARDERS_ADDR: 8.8.8.8, 8.8.4.4
-      ZONES_AVAILABLE: sorakh.local,terra.sorakh.one
+      ZONES_AVAILABLE: example.com,example.local
       OCTODNS_KEY_FILE: /var/run/secrets/octodns.key
     volumes:
       - /etc/bind
@@ -84,7 +84,7 @@ NS_FORWARDERS_ADDR=8.8.8.8,8.8.4.4
 # NS_FORWARDERS_ADDR=1.1.1.3,1.0.0.3
 
 # Available zones
-ZONES_AVAILABLE=example.com, example.local
+ZONES_AVAILABLE=example.com,example.local
 
 # OctoDNS Key
 OCTODNS_KEY_NAME=octodns-key
