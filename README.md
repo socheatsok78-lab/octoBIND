@@ -74,13 +74,13 @@ NS_ALSO_NOTIFY_ADDR=<Other Primary nameserver IP addresses>
 # Google Public DNS
 NS_FORWARDERS_ADDR=8.8.8.8,8.8.4.4
 
-# Cloudflare \w Malware Blocking
+# Cloudflare DNS
 # NS_FORWARDERS_ADDR=1.1.1.1,1.0.0.1
 
-# Cloudflare \w Malware Blocking
+# Cloudflare DNS \w Malware Blocking
 # NS_FORWARDERS_ADDR=1.1.1.2,1.0.0.2
 
-# Cloudflare \w Malware and Adult Content Blocking
+# Cloudflare DNS \w Malware and Adult Content Blocking
 # NS_FORWARDERS_ADDR=1.1.1.3,1.0.0.3
 
 # Available zones
