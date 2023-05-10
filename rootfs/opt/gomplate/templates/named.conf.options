@@ -47,10 +47,10 @@ options {
     notify yes;
 
     // Allow outgoing zone transfers
-    allow-transfer  { key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # AXFR
+    allow-transfer  { acl-corpnets; key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # AXFR
 
     // Allow submit dynamic updates for primary zones
-    allow-update    { key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # RFC 2136
+    allow-update    { acl-corpnets; key "{{ getenv "OCTODNS_KEY_NAME" }}"; }; # RFC 2136
 
     // Also notify the following servers
     also-notify    { ns-notify-primaries; };
