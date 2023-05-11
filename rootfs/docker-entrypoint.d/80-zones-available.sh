@@ -30,11 +30,11 @@ ${ZONE}	IN SOA	ns.${NS_SERVER_DOMAIN}. hostmaster.${ZONE}. (
 EOF
 # cat <<EOF > "${ZONE_DATABASE}"
 
-NAMESERVERS="${NAMESERVERS}"
-IFS=', ' read -r -a _NAMESERVERS <<< "${NAMESERVERS}"
+ZONES_NAMESERVERS="${ZONES_NAMESERVERS}"
+IFS=', ' read -r -a _ZONES_NAMESERVERS <<< "${ZONES_NAMESERVERS}"
 
 # Add NS record to zone
-for((i=1;i<="${#_NAMESERVERS[@]}";i++)); do
+for((i=1;i<="${#_ZONES_NAMESERVERS[@]}";i++)); do
 	echo "			NS ns${i}.${NS_SERVER_DOMAIN}." >> "${ZONE_DATABASE}"
 done
 
