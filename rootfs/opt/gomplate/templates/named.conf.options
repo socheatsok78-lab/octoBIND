@@ -59,11 +59,13 @@ options {
         acl-corpnets;
     };
 
+    {{ if ne (getenv "NS_SERVER_ROLE") "primary" -}}
     // Also notify the following servers
     also-notify    {
         ns-secondaries;
         ns-notify-primaries;
     };
+    {{- end }}
 
     // Enable NOTIFY when zone changes occur
     notify yes;
