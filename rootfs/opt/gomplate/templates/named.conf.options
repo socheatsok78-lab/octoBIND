@@ -20,7 +20,7 @@ primaries ns-notify-primaries   {
 
 // Default ACL for corporation networks
 // Matches any host on an IPv4 or IPv6 network for which the system has an interface.
-primaries ns-secondaries {
+acl ns-secondaries {
 {{- if getenv "NS_SECONDARIES_ADDR" "" }}
 {{- range getenv "NS_SECONDARIES_ADDR" "" | strings.SplitN "," -1 }}
     {{ . | strings.Trim " "}};
@@ -59,14 +59,19 @@ options {
         acl-corpnets;
     };
 
-    {{ if ne (getenv "NS_SERVER_ROLE") "primary" -}}
+    {{ if eq (getenv "NS_SERVER_ROLE") "primary" -}}
     // Enable NOTIFY when zone changes occur
     notify yes;
 
     // Also notify the following servers
     also-notify    {
-        ns-secondaries;
         ns-notify-primaries;
+    {{- if getenv "NS_SECONDARIES_ADDR" "" }}
+        // Also notify the secondaries servers
+        {{- range getenv "NS_SECONDARIES_ADDR" "" | strings.SplitN "," -1 }}
+        {{ . | strings.Trim " "}};
+        {{- end }}
+    {{- end }}
     };
     {{- end }}
 
