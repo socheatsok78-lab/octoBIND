@@ -20,7 +20,7 @@ zone "{{ getenv "NS_SERVER_DOMAIN" }}." in {
     {{ if ne (getenv "NS_SERVER_ROLE") "primary" }}primaries { ns-primaries; };{{ end }}
 };
 
-{{ if getenv "ZONES_AVAILABLE" }}
+{{- if getenv "ZONES_AVAILABLE" }}
 //
 // Do any available zones configuration here
 //
