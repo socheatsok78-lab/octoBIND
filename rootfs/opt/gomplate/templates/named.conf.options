@@ -32,12 +32,9 @@ acl acl-corpnets { localhost; localnets; };
 
 options {
     directory "/var/cache/bind";
-
 {{ if getenv "NS_FORWARDERS_ADDR" "" }}
     // If your ISP provided one or more IP addresses for stable
     // nameservers, you probably want to use them as forwarders.
-    // Uncomment the following block, and insert the addresses replacing
-    // the all-0's placeholder.
     forwarders { {{ range getenv "NS_FORWARDERS_ADDR" "" | strings.SplitN "," -1 }}
         {{ . | strings.Trim " "}};{{ end }}
     };
