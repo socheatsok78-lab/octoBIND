@@ -21,23 +21,17 @@ ${NS_SERVER_DOMAIN}. IN SOA ${ZONE_MNAME}. ${ZONE_RNAME}. (
 							)
 EOF
 
-NS_SECONDARIES_ADDR="${NS_SECONDARIES_ADDR}"
-IFS=', ' read -r -a _NS_SECONDARIES_ADDR <<< "${NS_SECONDARIES_ADDR}"
+NAMESERVERS="${NAMESERVERS}"
+IFS=', ' read -r -a _NAMESERVERS <<< "${NAMESERVERS}"
 
 # Add NS record to NS_SERVER_DOMAIN zone
-for((i=1;i<="${#_NS_SECONDARIES_ADDR[@]}";i++)); do
+for((i=1;i<="${#_NAMESERVERS[@]}";i++)); do
     echo "${NS_SERVER_DOMAIN}.		1800	IN	NS	ns${i}.${NS_SERVER_DOMAIN}." >> "${NS_DATABASE}"
-done
-
-# Add A record for NS LB to NS_SERVER_DOMAIN zone
-for _NAMESERVER in "${_NS_SECONDARIES_ADDR[@]}"
-do
-    echo "ns				1800	IN	A	${_NAMESERVER}" >> "${NS_DATABASE}"
 done
 
 # Add A record for each NS to NS_SERVER_DOMAIN zone
 _index=1
-for _NAMESERVER in "${_NS_SECONDARIES_ADDR[@]}"
+for _NAMESERVER in "${_NAMESERVERS[@]}"
 do
     echo "ns${_index}				1800	IN	A	${_NAMESERVER}" >> "${NS_DATABASE}"
     ((_index=_index+1))

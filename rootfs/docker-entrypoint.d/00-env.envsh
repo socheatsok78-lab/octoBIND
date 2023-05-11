@@ -3,10 +3,10 @@ export NS_SERVER_ROLE="${NS_SERVER_ROLE:-primary}"
 
 # This is an example, please do not uncomment the variable below
 # - Primary nameserver addresses
-# export NS_PRIMARY_IPS=10.10.100.53, 10.10.110.53, 10.10.120.53
+# export NS_PRIMARIES_ADDR=10.10.100.53, 10.10.110.53, 10.10.120.53
 
 # - Secondary nameserver addresses
-# export NS_SECONDARY_IPS=10.10.100.54, 10.10.100.55, 10.10.100.56
+# export NS_SECONDARIES_ADDR=10.10.100.54, 10.10.100.55, 10.10.100.56
 
 # - Other primary nameserver to get notify by this server
 # export NS_ALSO_NOTIFY_ADDR=10.10.200.54, 10.10.200.55, 10.10.200.56
@@ -22,7 +22,7 @@ export OCTODNS_KEY_NAME="${OCTODNS_KEY_NAME:-octodns-key}"
 export OCTODNS_KEY_FILE="${OCTODNS_KEY_FILE:-/etc/bind/octodns.key}"
 
 # Default zone configurations
-ZONE_DEFAULT_MNAME="ns.${NS_SERVER_DOMAIN}"
+ZONE_DEFAULT_MNAME="ns1.${NS_SERVER_DOMAIN}"
 ZONE_DEFAULT_RNAME="hostmaster.${NS_SERVER_DOMAIN}"
 
 export ZONE_MNAME="${ZONE_MNAME-$ZONE_DEFAULT_MNAME}"
@@ -31,3 +31,6 @@ export ZONE_REFRESH="${ZONE_REFRESH:-3h}"
 export ZONE_RETRY="${ZONE_RETRY:-1h}"
 export ZONE_EXPIRE="${ZONE_EXPIRE:-1w}"
 export ZONE_TTL="${ZONE_TTL:-30m}"
+
+COMBINED_NAMESERVERS_IPS="${NS_PRIMARIES_ADDR},${NS_SECONDARIES_ADDR}"
+export NAMESERVERS="${NAMESERVERS-$COMBINED_NAMESERVERS_IPS}"
