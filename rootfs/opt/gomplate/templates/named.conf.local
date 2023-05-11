@@ -11,6 +11,20 @@
 //     The content are automatically generated.
 //
 
+{{- if getenv "ARPA_AVAILABLE" }}
+//
+// Do any available arpa configuration here
+//
+{{- range getenv "ARPA_AVAILABLE" | strings.SplitN "," -1 }}
+zone "{{ . | strings.Trim " "}}.in-addr.arpa." in {
+    type {{ getenv "NS_SERVER_ROLE" "primary" }};
+    file "/var/lib/bind/{{ . | strings.Trim " "}}.rev";
+    {{ if ne (getenv "NS_SERVER_ROLE") "primary" }}primaries { ns-primaries; };{{ end }}
+};
+{{- end }}
+// End available arpa
+{{- end }}
+
 //
 // Default {{ getenv "NS_SERVER_ROLE" "primary" }} name server zone {{ getenv "NS_SERVER_DOMAIN" }}
 //

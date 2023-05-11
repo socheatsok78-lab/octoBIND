@@ -21,4 +21,9 @@ for col in /var/lib/bind/db.*; do
         print_file_debug "$col"
     fi
 done
+for col in /var/lib/bind/*.rev; do
+    if [[ "${col}" != *".jnl" ]]; then
+        print_file_debug "$col"
+    fi
+done
 fi

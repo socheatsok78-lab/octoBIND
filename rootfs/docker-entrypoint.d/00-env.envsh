@@ -14,6 +14,9 @@ export NS_SERVER_ROLE="${NS_SERVER_ROLE:-primary}"
 # - Forwarder addresses
 # export NS_FORWARDERS_ADDR=8.8.8.8, 8.8.4.4
 
+# - Available arpa
+# export ARPA_AVAILABLE=100.10.10, 200.10.10
+
 # - Available zones
 # export ZONES_AVAILABLE=example.com, example.local
 
