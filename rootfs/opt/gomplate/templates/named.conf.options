@@ -93,5 +93,8 @@ options {
     {{- end }}
     };
 
+    listen-on    { any; };
+    {{- if eq (getenv "IPV6_ENABLE") "true" }}
     listen-on-v6 { any; };
+    {{- end }}
 };
