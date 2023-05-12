@@ -4,7 +4,11 @@
 
 // Consider adding the 1918 zones here, if they are not used in your
 // organization
+{{- if eq (getenv "RFC1918_ENABLE") "true" }}
+include "/etc/bind/zones.rfc1918";
+{{- else }}
 //include "/etc/bind/zones.rfc1918";
+{{- end }}
 
 //
 // !!! Please do no manually modify any content below !!!
