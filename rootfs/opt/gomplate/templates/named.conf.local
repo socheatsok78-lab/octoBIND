@@ -4,10 +4,21 @@
 
 // Consider adding the 1918 zones here, if they are not used in your
 // organization
+// https://kb.isc.org/docs/aa-00800
+// https://datatracker.ietf.org/doc/html/rfc1918
 {{- if eq (getenv "RFC1918_ENABLE") "true" }}
 include "/etc/bind/zones.rfc1918";
 {{- else }}
 //include "/etc/bind/zones.rfc1918";
+{{- end }}
+
+//
+// Include custom configuration
+//
+// e.g: CUSTOM_CONFIG_PATH=/etc/bind-custom/zones.custom
+//
+{{- if getenv "CUSTOM_CONFIG_PATH" "" }}
+include "{{ getenv "CUSTOM_CONFIG_PATH" }}";
 {{- end }}
 
 //
