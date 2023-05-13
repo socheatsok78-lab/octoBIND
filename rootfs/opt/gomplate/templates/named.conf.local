@@ -17,7 +17,7 @@ include "/etc/bind/zones.rfc1918";
 //
 // e.g: CUSTOM_CONFIG_PATH=/etc/bind-custom/zones.custom
 //
-{{- if getenv "CUSTOM_CONFIG_PATH" -}}
+{{ if getenv "CUSTOM_CONFIG_PATH" -}}
 include "{{ getenv "CUSTOM_CONFIG_PATH" }}";
 {{- end }}
 
